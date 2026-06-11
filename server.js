@@ -7,7 +7,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://hospital-management-system-vishnu.netlify.app",
+    origin: ["http://localhost:5173", "http://localhost:3000", "https://hospital-management-system-vishnu.netlify.app"],
     credentials: true,
   }),
 );
@@ -19,6 +19,7 @@ app.use("/api/patients", require("./routes/patients"));
 app.use("/api/medicines", require("./routes/medicines"));
 app.use("/api/blood", require("./routes/blood"));
 app.use("/api/appointments", require("./routes/appointments"));
+app.use("/api/doctors", require("./routes/doctors"));
 app.use("/api/admin", require("./routes/admin"));
 
 app.get("/", (req, res) =>

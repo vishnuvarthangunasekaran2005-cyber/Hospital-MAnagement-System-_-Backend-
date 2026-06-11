@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Patient = require("../models/Patient");
 const Medicine = require("../models/Medicine");
 const Appointment = require("../models/Appointment");
+const Doctor = require("../models/Doctor");
 const { BloodStock, BloodRequest } = require("../models/Blood");
 const { adminOnly } = require("../middleware/auth");
 
@@ -20,6 +21,8 @@ router.get("/stats", adminOnly, async (req, res) => {
       totalAppointments,
       pendingRequests,
       totalUsers,
+      totalDoctors,
+      activeDoctors,
     ] = await Promise.all([
       Patient.countDocuments(),
       Patient.countDocuments({ status: "Admitted" }),
@@ -31,6 +34,8 @@ router.get("/stats", adminOnly, async (req, res) => {
       Appointment.countDocuments(),
       BloodRequest.countDocuments({ status: "Pending" }),
       User.countDocuments(),
+      Doctor.countDocuments(),
+      Doctor.countDocuments({ status: "active" }),
     ]);
 
     res.json({
@@ -44,6 +49,8 @@ router.get("/stats", adminOnly, async (req, res) => {
       totalAppointments,
       pendingBloodRequests: pendingRequests,
       totalUsers,
+      totalDoctors,
+      activeDoctors,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
