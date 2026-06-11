@@ -7,14 +7,16 @@ const generateToken = (user) =>
   jwt.sign(
     { id: user._id, role: user.role, name: user.name },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 
 // POST /api/auth/seed-admin  — run once to create the first admin
 router.post("/seed-admin", async (req, res) => {
   try {
     if (await User.findOne({ role: "admin" }))
-      return res.status(400).json({ message: "Admin already exists. Use /login." });
+      return res
+        .status(400)
+        .json({ message: "Admin already exists. Use /login." });
 
     const admin = await User.create({
       name: "Admin",
@@ -28,7 +30,7 @@ router.post("/seed-admin", async (req, res) => {
       email: admin.email,
       defaultPassword: "admin@123",
     });
-  } catch (err) {
+  } catch(err){
     res.status(500).json({ message: err.message });
   }
 });
@@ -39,7 +41,9 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password)
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
 
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user || !(await user.matchPassword(password)))
@@ -47,7 +51,12 @@ router.post("/login", async (req, res) => {
 
     res.json({
       token: generateToken(user),
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -60,13 +69,19 @@ router.post("/register", protect, adminOnly, async (req, res) => {
     const { name, email, password, role } = req.body;
 
     if (!name || !email || !password)
-      return res.status(400).json({ message: "Name, email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Name, email and password are required" });
 
     if (password.length < 6)
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
 
     if (await User.findOne({ email: email.toLowerCase().trim() }))
-      return res.status(400).json({ message: "A user with this email already exists" });
+      return res
+        .status(400)
+        .json({ message: "A user with this email already exists" });
 
     const user = await User.create({
       name: name.trim(),
@@ -77,7 +92,12 @@ router.post("/register", protect, adminOnly, async (req, res) => {
 
     res.status(201).json({
       message: "User registered successfully",
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -100,10 +120,14 @@ router.put("/change-password", protect, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword)
-      return res.status(400).json({ message: "Both current and new password are required" });
+      return res
+        .status(400)
+        .json({ message: "Both current and new password are required" });
 
     if (newPassword.length < 6)
-      return res.status(400).json({ message: "New password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 6 characters" });
 
     const user = await User.findById(req.user.id);
     if (!(await user.matchPassword(currentPassword)))
