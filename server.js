@@ -5,18 +5,25 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors({ origin: "https://hospital-management-system-vishnu.netlify.app/", credentials: true }));
+app.use(
+  cors({
+    origin: "https://hospital-management-system-vishnu.netlify.app",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // Routes
-app.use("/api/auth",         require("./routes/auth"));
-app.use("/api/patients",     require("./routes/patients"));
-app.use("/api/medicines",    require("./routes/medicines"));
-app.use("/api/blood",        require("./routes/blood"));
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/patients", require("./routes/patients"));
+app.use("/api/medicines", require("./routes/medicines"));
+app.use("/api/blood", require("./routes/blood"));
 app.use("/api/appointments", require("./routes/appointments"));
-app.use("/api/admin",        require("./routes/admin"));
+app.use("/api/admin", require("./routes/admin"));
 
-app.get("/", (req, res) => res.json({ message: "Hospital Management API is running" }));
+app.get("/", (req, res) =>
+  res.json({ message: "Hospital Management API is running" }),
+);
 
 // 404 handler
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
@@ -33,11 +40,13 @@ mongoose
     console.log("✅ MongoDB Connected");
     const PORT = process.env.PORT || 5000;
     const server = app.listen(PORT, () =>
-      console.log(`🚀 Server running on http://localhost:${PORT}`)
+      console.log(`🚀 Server running on http://localhost:${PORT}`),
     );
     server.on("error", (err) => {
       if (err.code === "EADDRINUSE") {
-        console.error(`❌ Port ${PORT} is already in use. Kill the process and restart.`);
+        console.error(
+          `❌ Port ${PORT} is already in use. Kill the process and restart.`,
+        );
       } else {
         console.error("❌ Server error:", err.message);
       }
